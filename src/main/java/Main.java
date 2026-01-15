@@ -106,7 +106,7 @@ private Inventory handleCreateInventory() {
 }
 
 private void handleTransferIn(Inventory inventory, String[] words) {
-    Item item = new Item(words[1]);
+    Item item = new Item(words[1], Double.parseDouble(words[3])) ;
     String amount = words[2];
     TransferIn t = new TransferIn( item, Integer.parseInt(amount));
     TransferIn.doTransfer(inventory, t);
@@ -119,7 +119,7 @@ private void handleTransferOut(Inventory inventory, String[] words) {
     String sku = words[1];
     String amount = words[2];
 
-    TransferOut t = new TransferOut( new Item(sku), Integer.parseInt(amount));
+    TransferOut t = new TransferOut( new Item(sku, 0.0), Integer.parseInt(amount));
     TransferOut.doTransfer(inventory, t);
     transferList.add(t);
 }

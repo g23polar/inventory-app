@@ -38,9 +38,13 @@ public class TransferOut extends Transfer{
                 }
             }
             else {
-            currentAmount -= amountRequested;
-            current.put(item, currentAmount);
-            System.out.println("Item " + item + " updated to " + currentAmount);
+                currentAmount -= amountRequested;
+                if(currentAmount == 0) {
+                    current.remove(item);
+                    return;
+                }
+                current.put(item, currentAmount);
+                System.out.println("Item " + item + " updated to " + currentAmount);
             }
         }
         else{

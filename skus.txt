@@ -1,7 +1,7 @@
 addrule allowpartial Y
 
-in sku123 5000
-in sku545 5000
-in sku1432 5000
-in sku167 5000
-in sku453 5000
+in sku123 5000 12.5
+in sku545 5000 17
+in sku1432 5000 40
+in sku167 5000 42
+in sku453 5000 65

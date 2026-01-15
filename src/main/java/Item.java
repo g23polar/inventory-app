@@ -9,11 +9,17 @@ import java.util.Objects;
 public class Item implements Comparable<Item> {
 
     private @Getter final String sku;
-    private @Getter double price = 0.0;
+    private @Getter final Price price;
 
-    public Item(String newsku){
-        this.sku = newsku;
+    public Item(String sku1, Price price1) {
+        this.sku = sku1;
+        this.price = price1;
     }
+    public Item(String sku1, Double price1) {
+        this.sku = sku1;
+        this.price = new Price(price1);
+    }
+
 
     @Override
     public String toString() {

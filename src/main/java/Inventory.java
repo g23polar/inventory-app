@@ -1,12 +1,14 @@
 package main.java;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 public class Inventory {
 
-    private HashMap<Item, Integer> inventory; // sku -> quantity
+    private HashMap<Item, Integer> inventory; // item -> quantity
     private HashMap<Rule, String> ruleSet;
-
+    private final Calculator calculator = new Calculator();
     public Inventory() {
         this.inventory = new HashMap<>();
         this.ruleSet = new HashMap<Rule, String>();
@@ -28,9 +30,20 @@ public class Inventory {
         System.out.println("-------------------");
 
 
+        double runningTotal = 0.0;
+
         for(Item item: inventory.keySet()){
-            System.out.println(item.getSku() + ": " + inventory.get(item));
+            String t = Calculator.getTotalAsString(inventory.get(item), item.getPrice());
+            runningTotal += Calculator.multiply(inventory.get(item), item.getPrice());
+            String s = item.getSku() + ": " + inventory.get(item);
+            s += " : $ "  + t;
+            System.out.println(s);
         }
+        System.out.println("-------------------");
+        System.out.println("Total : "
+                + inventory.values().stream().collect(Collectors.summingInt(Integer::intValue))
+                + " : " +  Calculator.toString(runningTotal)
+        );
     }
 
 
