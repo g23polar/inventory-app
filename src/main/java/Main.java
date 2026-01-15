@@ -19,12 +19,29 @@ void setup() throws FileNotFoundException {
 }
 
 void main() throws FileNotFoundException {
-    Scanner scanner = new Scanner(System.in);
     inventory = handleCreateInventory();
     setup();
     scanner = new Scanner(System.in);
     while (true) {
-        System.out.println("Options:\texit\ttransferin (in) \ttransferout (out)\tsnapshot (s) \treset \tgetrules \taddrule \tremoverule \tlistrules (lr) \t listtransfers (lt)\n");
+
+        System.out.printf(
+                "Options:%n" +
+                        "\t%-22s %-22s %-22s %-22s%n" +
+                        "\t%-22s %-22s %-22s %-22s%n" +
+                        "\t%-22s %-22s %-22s %-22s%n",
+                "exit",
+                "transferin (in)",
+                "transferout (out)",
+                "snapshot (s)",
+                "reset",
+                "getrules",
+                "addrule",
+                "removerule",
+                "listrules (lr)",
+                "listtransfers (lt)",
+                "gettransactions (gt)",
+                ""
+        );
         System.out.print("Enter a command: ");
         input = scanner.nextLine();
         words = input.split(" ");
@@ -37,7 +54,7 @@ void main() throws FileNotFoundException {
 void router(){
     try{
         switch (words[0].toLowerCase().trim()) {
-            case "m":
+            case "gettransasctions":case"gt":
                 handleTransactionLogRequest();
             case "getrules":
                 getSupportedRules();
@@ -128,7 +145,7 @@ private void handleNewRule(Inventory inventory, String[] words) {
 
 private Inventory handleCreateInventory() {
     System.out.println("Creating a new inventory.");
-    transactionLog = new HashMap<Integer, Transaction>();
+    transactionLog = new HashMap<>();
     return new Inventory();
 }
 

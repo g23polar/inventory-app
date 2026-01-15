@@ -55,7 +55,7 @@ public class Inventory {
         double runningTotal = 0.0;
 
         for(Item item: inventory.keySet()){
-            String t = Calculator.getTotalAsString(inventory.get(item), item.getPrice());
+            String t = Calculator.getTotalAsString(item.getPrice(), inventory.get(item));
             runningTotal += Calculator.multiply(item.getPrice(), inventory.get(item));
             String s = item.getSku() + ": " + inventory.get(item);
             s += " : $ "  + t;
@@ -84,6 +84,6 @@ public class Inventory {
                 return;
             }
         }
-        System.out.println("This rule "+rule+ " does not exist, yet");
+        System.out.println("This rule "+ rule + " does not exist, yet");
     }
 }

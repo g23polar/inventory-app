@@ -36,6 +36,8 @@ public class Transaction {
     }
 
     public String toString(){
-        return transactionType.toString() + " " + item.toString() + " " + quantity.toString() +  " " + status.toString();
+        return transactionType.toString() + " " + item.toString() + "\t:\t"
+                + item.getPrice() + " x " + quantity.toString() +  " = "
+                + Calculator.getTotalAsString(item.getPrice(), quantity) + "\t--> " + status.toString();
     }
 }

@@ -10,6 +10,6 @@ public class Price extends java.math.BigDecimal {
         super(val);
     }
     public String toString(){
-        return super.toString();
+        return Calculator.getPriceAsString(this);
     }
 }

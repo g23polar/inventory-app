@@ -9,7 +9,10 @@ public class Calculator {
 
     Calculator() {}
 
-    public static String getTotalAsString(int quantity, Price price){
+    public static String getPriceAsString(Price price) {
+        return  formatter.format(price.doubleValue());
+    }
+    public static String getTotalAsString(Price price, int quantity) {
         return  formatter.format(quantity*price.doubleValue());
     }
 
