@@ -29,7 +29,7 @@ public class Inventory {
 
 
         for(Item item: inventory.keySet()){
-            System.out.println(item.getSKU() + ": " + inventory.get(item));
+            System.out.println(item.getSku() + ": " + inventory.get(item));
         }
     }
 
