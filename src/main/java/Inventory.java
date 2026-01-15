@@ -1,5 +1,7 @@
 package main.java;
 
+import lombok.Getter;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.stream.Collectors;
@@ -7,18 +9,38 @@ import java.util.stream.Collectors;
 public class Inventory {
 
     private HashMap<Item, Integer> inventory; // item -> quantity
+    @Getter
     private HashMap<Rule, String> ruleSet;
-    private final Calculator calculator = new Calculator();
+
+    @Getter
+    private Double capital;
+
     public Inventory() {
+        this(Constants.MILLION);
+    }
+    public Inventory(Double startingCapital) {
         this.inventory = new HashMap<>();
         this.ruleSet = new HashMap<Rule, String>();
+        this.capital = startingCapital;
     }
 
     protected HashMap<Item, Integer> getInventory() {
         return inventory;
     }
 
-
+    public void calculateCapital(Transaction transaction) {
+        switch (transaction.getTransactionType()){
+            case Transaction.TransactionType.PURCHASE:
+                this.capital -=  Calculator.multiply(transaction.getItem().getPrice(), transaction.getQuantity());
+                break;
+            case Transaction.TransactionType.SALE:
+                this.capital +=  Calculator.multiply(transaction.getItem().getPrice(), transaction.getQuantity());
+                break;
+            default:
+                System.out.println("Invalid transaction type");
+                throw new IllegalArgumentException("Invalid transaction type");
+        }
+    }
     public void getInventorySnapshot(){
         if(inventory.isEmpty()){
             System.out.println("INVENTORY IS EMPTY !!!");
@@ -34,7 +56,7 @@ public class Inventory {
 
         for(Item item: inventory.keySet()){
             String t = Calculator.getTotalAsString(inventory.get(item), item.getPrice());
-            runningTotal += Calculator.multiply(inventory.get(item), item.getPrice());
+            runningTotal += Calculator.multiply(item.getPrice(), inventory.get(item));
             String s = item.getSku() + ": " + inventory.get(item);
             s += " : $ "  + t;
             System.out.println(s);
@@ -63,9 +85,5 @@ public class Inventory {
             }
         }
         System.out.println("This rule "+rule+ " does not exist, yet");
-    }
-
-    public HashMap<Rule, String> getRuleSet(){
-        return this.ruleSet;
     }
 }

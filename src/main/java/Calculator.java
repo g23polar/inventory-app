@@ -20,8 +20,11 @@ public class Calculator {
         return formatter.format(d);
     }
 
-    public static double multiply(Object a, Object b){
-        return Double.parseDouble(a.toString()) * Double.parseDouble(b.toString());
+    public static double multiply(Double dollar, Integer amount){
+        return Double.parseDouble(dollar.toString()) * amount;
+    }
+    public static double multiply(Price dollar, Integer amount){
+        return dollar.doubleValue() * amount;
     }
 
     public static Double getTotalAsDouble(double quantity, Price price){

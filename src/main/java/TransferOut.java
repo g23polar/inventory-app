@@ -17,7 +17,7 @@ public class TransferOut extends Transfer{
     protected Item getItem() {
         return this.item;
     }
-    public static void doTransfer(Inventory inventory, TransferOut transferOut) {
+    public static boolean doTransfer(Inventory inventory, TransferOut transferOut) {
 
         HashMap<Item, Integer> current = inventory.getInventory();
         Item item = transferOut.getItem();
@@ -33,22 +33,26 @@ public class TransferOut extends Transfer{
                 }
                 if(!permittedPartials){
                     System.out.println("Don't have enough, not permitted to do partials");
+                    return false;
                 } else {
                     current.remove(item);
+                    return true;
                 }
             }
             else {
                 currentAmount -= amountRequested;
                 if(currentAmount == 0) {
                     current.remove(item);
-                    return;
+                    return true;
                 }
                 current.put(item, currentAmount);
                 System.out.println("Item " + item + " updated to " + currentAmount);
+                return true;
             }
         }
         else{
             System.out.println("Item " + item + " not found");
+            return false;
         }
     }
 

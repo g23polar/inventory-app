@@ -6,13 +6,14 @@ private Inventory inventory;
 private String input;
 private String[] words;
 private Scanner scanner;
+private HashMap<Integer, Transaction> transactionLog;
 
 void setup() throws FileNotFoundException {
     scanner = new Scanner(new File("skus.txt"));
     while (scanner.hasNextLine()) {
         input = scanner.nextLine();
         words = input.split(" ");
-        runner();
+        router();
     }
     scanner.close();
 }
@@ -27,15 +28,17 @@ void main() throws FileNotFoundException {
         System.out.print("Enter a command: ");
         input = scanner.nextLine();
         words = input.split(" ");
-        runner();
+        router();
         System.out.println("----------------------");
     }
 }
 
 
-void runner(){
+void router(){
     try{
         switch (words[0].toLowerCase().trim()) {
+            case "m":
+                handleTransactionLogRequest();
             case "getrules":
                 getSupportedRules();
                 break;
@@ -64,7 +67,13 @@ void runner(){
                 viewTransfers();
                 break;
             case "reset":
-                inventory = new Inventory();
+                transactionLog = new HashMap<Integer, Transaction>();
+                if (words.length >= 2) {
+                    inventory = new Inventory(Double.parseDouble(words[1]));
+                }
+                else  {
+                    inventory = new Inventory(Constants.MILLION);
+                }
             case "":
                 break;
             default:
@@ -75,6 +84,23 @@ void runner(){
         System.out.println("Invalid input, try again.");
     }
 }
+
+private void handleTransactionLogRequest() {
+    if(transactionLog.isEmpty()){
+        System.out.println("TRANSACTION LOG IS EMPTY !!!");
+        return;
+    }
+
+    System.out.println("-------------------");
+    System.out.println("  TRANSACTION LOG");
+    System.out.println("-------------------");
+
+    for(Map.Entry<Integer, Transaction> entry : transactionLog.entrySet()){
+        System.out.println(entry.getKey() + ": " + entry.getValue());
+    }
+
+}
+
 private void handleGetRules() {
     if(inventory.getRuleSet().isEmpty()){
         System.out.println("No rules found");
@@ -102,25 +128,50 @@ private void handleNewRule(Inventory inventory, String[] words) {
 
 private Inventory handleCreateInventory() {
     System.out.println("Creating a new inventory.");
+    transactionLog = new HashMap<Integer, Transaction>();
     return new Inventory();
 }
 
 private void handleTransferIn(Inventory inventory, String[] words) {
     Item item = new Item(words[1], Double.parseDouble(words[3])) ;
     String amount = words[2];
-    TransferIn t = new TransferIn( item, Integer.parseInt(amount));
+    Transaction transaction = new Transaction(Transaction.TransactionType.PURCHASE, item, amount);
+    if(!executeTransaction(transaction)) return;
+    inventory.calculateCapital(transaction);
+    TransferIn t= new TransferIn( item, Integer.parseInt(amount));
     TransferIn.doTransfer(inventory, t);
     transferList.add(t);
 }
 
+private boolean executeTransaction(Transaction transaction) {
+    // validate
+    if(transaction.getTransactionType().equals(Transaction.TransactionType.PURCHASE)){
+        double capRequired = Calculator.multiply(transaction.getItem().getPrice(), transaction.getQuantity());
+        if (capRequired > inventory.getCapital()) {
+            System.out.println("Tough luck buddy, $ " + (capRequired - inventory.getCapital())+ " short.");
+            transaction.setStatus(Transaction.Status.INCOMPLETE);
+            this.transactionLog.put(transactionLog.size() + 1, transaction);
+            return false;
+        }
+    }
+    transaction.setStatus(Transaction.Status.SUCCESSFUL);
+    this.transactionLog.put(transactionLog.size() + 1, transaction);
+    return true;
+}
+
+
+// TODO: sale capital increment for partials
 private void handleTransferOut(Inventory inventory, String[] words) {
-
-    // sku , amount
-    String sku = words[1];
     String amount = words[2];
-
-    TransferOut t = new TransferOut( new Item(sku, 0.0), Integer.parseInt(amount));
-    TransferOut.doTransfer(inventory, t);
+    Item item = new Item(words[1], Double.parseDouble(words[3])) ;
+    TransferOut t = new TransferOut(item, Integer.parseInt(amount));
+    if(TransferOut.doTransfer(inventory, t)) {
+        // check transfer completion - then do transaction
+        Transaction transaction = new Transaction(Transaction.TransactionType.SALE, item, amount);
+        transaction.setStatus(Transaction.Status.SUCCESSFUL);
+        transactionLog.put(transactionLog.size() + 1, transaction);
+        inventory.calculateCapital(transaction);
+    }
     transferList.add(t);
 }
 

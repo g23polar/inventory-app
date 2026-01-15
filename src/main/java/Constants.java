@@ -16,4 +16,6 @@ public final class Constants {
             allowpartial
     );
 
+    public static final double MILLION = 1000000;
+
 }
